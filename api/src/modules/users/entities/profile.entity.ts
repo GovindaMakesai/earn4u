@@ -97,8 +97,8 @@ export class Profile {
   @OneToOne(() => Wallet, (wallet) => wallet.user)
   wallet: Wallet;
 
-  @OneToOne(() => UserCredentials, (creds) => creds.user)
-  credentials: UserCredentials;
+  @OneToOne(() => UserCredentials, (creds) => creds.user, { nullable: true })
+  credentials?: UserCredentials;
 }
 
 @Entity('follows', { schema: 'users' })

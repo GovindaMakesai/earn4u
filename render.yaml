@@ -20,7 +20,7 @@ services:
     plan: free
     rootDir: api
     buildCommand: npm ci --include=dev && npm run build && npm prune --omit=dev
-    startCommand: node scripts/migrate.js && node scripts/seed-admin.js && node dist/main
+    startCommand: node scripts/migrate.js && (node scripts/seed-admin.js || true) && node dist/main
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV

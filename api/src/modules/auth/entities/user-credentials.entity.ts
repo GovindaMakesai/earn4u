@@ -60,7 +60,7 @@ export class UserCredentials {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt: Date;
 
-  @OneToOne(() => Profile)
+  @OneToOne(() => Profile, (profile) => profile.credentials)
   @JoinColumn({ name: 'user_id' })
   user: Profile;
 }
