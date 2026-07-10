@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { api, getApiErrorMessage } from '@/lib/api';
+import { formatCount, unwrapPaginatedUsers } from '@/lib/format';
 import type { AdminUser, ApiResponse, PaginatedUsers } from '@/lib/types';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/ui/error-state';
@@ -35,8 +36,9 @@ export default function UsersPage() {
       const { data } = await api.get<ApiResponse<PaginatedUsers>>('/admin/users', {
         params: { q: search, page, limit, status: status || undefined },
       });
-      setUsers(data.data.data);
-      setTotal(data.data.meta.total);
+      const parsed = unwrapPaginatedUsers(data.data);
+      setUsers(parsed.users);
+      setTotal(parsed.total);
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {
@@ -133,7 +135,7 @@ export default function UsersPage() {
                   <td className="p-4 font-medium">@{user.username}</td>
                   <td className="p-4 text-[var(--text-secondary)]">{user.email ?? '—'}</td>
                   <td className="p-4">VIP {user.vipLevel}</td>
-                  <td className="p-4">{user.coinsBalance.toLocaleString()}</td>
+                  <td className="p-4">{formatCount(user.coinsBalance)}</td>
                   <td className="p-4">
                     <span className={`px-2 py-1 rounded-full text-xs ${statusStyles[user.status] ?? ''}`}>
                       {user.status}
@@ -203,8 +205,8 @@ export default function UsersPage() {
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between"><dt className="text-[var(--text-secondary)]">Email</dt><dd>{selected.email ?? '—'}</dd></div>
               <div className="flex justify-between"><dt className="text-[var(--text-secondary)]">Role</dt><dd>{selected.role}</dd></div>
-              <div className="flex justify-between"><dt className="text-[var(--text-secondary)]">Coins</dt><dd>{selected.coinsBalance.toLocaleString()}</dd></div>
-              <div className="flex justify-between"><dt className="text-[var(--text-secondary)]">Diamonds</dt><dd>{selected.diamondsBalance.toLocaleString()}</dd></div>
+              <div className="flex justify-between"><dt className="text-[var(--text-secondary)]">Coins</dt><dd>{formatCount(selected.coinsBalance)}</dd></div>
+              <div className="flex justify-between"><dt className="text-[var(--text-secondary)]">Diamonds</dt><dd>{formatCount(selected.diamondsBalance)}</dd></div>
               <div className="flex justify-between"><dt className="text-[var(--text-secondary)]">Status</dt><dd>{selected.status}</dd></div>
             </dl>
             <button onClick={() => setSelected(null)} className="mt-6 w-full py-2 rounded-lg bg-white/10">

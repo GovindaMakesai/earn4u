@@ -11,21 +11,10 @@ import {
   Clock,
 } from 'lucide-react';
 import { api, getApiErrorMessage } from '@/lib/api';
+import { formatCount, formatMoney } from '@/lib/format';
 import type { ApiResponse, DashboardStats } from '@/lib/types';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/ui/error-state';
-
-function formatMoney(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat('en-US').format(value);
-}
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -59,12 +48,12 @@ export default function DashboardPage() {
     { label: 'Total Revenue', value: formatMoney(stats.totalRevenue), icon: DollarSign, color: 'text-amber-400' },
     { label: 'Revenue Today', value: formatMoney(stats.revenueToday), icon: TrendingUp, color: 'text-emerald-400' },
     { label: 'Revenue (Month)', value: formatMoney(stats.revenueMonth), icon: TrendingUp, color: 'text-purple-400' },
-    { label: 'Active Users', value: formatNumber(stats.activeUsers), icon: Users, color: 'text-cyan-400' },
-    { label: 'Total Users', value: formatNumber(stats.totalUsers), icon: Users, color: 'text-purple-400' },
-    { label: 'Live Streams', value: formatNumber(stats.activeStreams), icon: Radio, color: 'text-rose-400' },
-    { label: 'Voice Rooms', value: formatNumber(stats.activeRooms), icon: Mic, color: 'text-cyan-400' },
-    { label: 'Platform Coins', value: formatNumber(stats.platformCoinsBalance), icon: Wallet, color: 'text-amber-400' },
-    { label: 'Pending Withdrawals', value: formatNumber(stats.pendingWithdrawals), icon: Clock, color: 'text-rose-400' },
+    { label: 'Active Users', value: formatCount(stats.activeUsers), icon: Users, color: 'text-cyan-400' },
+    { label: 'Total Users', value: formatCount(stats.totalUsers), icon: Users, color: 'text-purple-400' },
+    { label: 'Live Streams', value: formatCount(stats.activeStreams), icon: Radio, color: 'text-rose-400' },
+    { label: 'Voice Rooms', value: formatCount(stats.activeRooms), icon: Mic, color: 'text-cyan-400' },
+    { label: 'Platform Coins', value: formatCount(stats.platformCoinsBalance), icon: Wallet, color: 'text-amber-400' },
+    { label: 'Pending Withdrawals', value: formatCount(stats.pendingWithdrawals), icon: Clock, color: 'text-rose-400' },
   ];
 
   return (

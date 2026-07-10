@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { api, getApiErrorMessage } from '@/lib/api';
+import { formatCount } from '@/lib/format';
 import type { ApiResponse, GiftCatalog } from '@/lib/types';
 import { PageSkeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/ui/error-state';
@@ -57,7 +58,7 @@ export default function GiftsPage() {
                 <tr key={gift.id} className="border-b border-white/5">
                   <td className="p-4 font-medium">{gift.name}</td>
                   <td className="p-4">{gift.category}</td>
-                  <td className="p-4">{gift.coinPrice.toLocaleString()}</td>
+                  <td className="p-4">{formatCount(gift.coinPrice)}</td>
                   <td className="p-4">{gift.isActive ? 'Yes' : 'No'}</td>
                 </tr>
               ))}
