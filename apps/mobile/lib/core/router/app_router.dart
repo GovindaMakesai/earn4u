@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../auth/auth_provider.dart';
 import '../../../features/auth/presentation/login_screen.dart';
+import '../../../features/auth/presentation/signup_screen.dart';
 import '../../../features/discover/presentation/discover_screen.dart';
 import '../../../features/gifts/presentation/gifts_showcase_screen.dart';
 import '../../../features/home/presentation/home_screen.dart';
@@ -22,15 +23,20 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: _AuthRefreshListenable(ref),
     redirect: (context, state) {
       if (auth.loading) return null;
-      final isLogin = state.matchedLocation == '/login';
-      if (!auth.isAuthenticated && !isLogin) return '/login';
-      if (auth.isAuthenticated && isLogin) return '/';
+      final isAuthRoute =
+          state.matchedLocation == '/login' || state.matchedLocation == '/signup';
+      if (!auth.isAuthenticated && !isAuthRoute) return '/login';
+      if (auth.isAuthenticated && isAuthRoute) return '/';
       return null;
     },
     routes: [
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => const SignupScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),

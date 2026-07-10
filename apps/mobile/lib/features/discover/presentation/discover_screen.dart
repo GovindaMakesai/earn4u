@@ -5,6 +5,7 @@ import '../../../core/constants/demo_content.dart';
 import '../../../core/data/app_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/shell_metrics.dart';
 import '../../../shared/widgets/live_stream_card.dart';
 
 class DiscoverScreen extends ConsumerWidget {
@@ -27,7 +28,12 @@ class DiscoverScreen extends ConsumerWidget {
             loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
             error: (e, _) => SliverFillRemaining(child: Center(child: Text('Error: $e'))),
             data: (streams) => SliverPadding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                ShellMetrics.scrollBottomPadding(context),
+              ),
               sliver: streams.isEmpty
                   ? const SliverFillRemaining(
                       child: Center(child: Text('No streams to discover', style: TextStyle(color: AppColors.textSecondary))),

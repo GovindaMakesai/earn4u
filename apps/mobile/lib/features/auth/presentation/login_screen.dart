@@ -30,11 +30,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.gradientHero),
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSpacing.xxl),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Spacer(flex: 2),
+                const SizedBox(height: AppSpacing.xxl),
                 const Earn4UBrand()
                     .animate()
                     .fadeIn(duration: AppAnimations.entrance)
@@ -42,9 +43,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'Socialize. Create. Earn.',
+                  textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ).animate().fadeIn(delay: 100.ms),
-                const Spacer(flex: 3),
+                const SizedBox(height: AppSpacing.xxxl),
                 GlassSurface(
                   child: Column(
                     children: [
@@ -101,13 +103,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.08, end: 0),
                 const SizedBox(height: AppSpacing.lg),
                 TextButton(
-                  onPressed: _isLoading ? null : _guestLogin,
+                  onPressed: _isLoading ? null : () => context.go('/signup'),
                   child: Text(
-                    'Continue as Guest',
+                    'Create an account',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.electricBlueLight),
                   ),
                 ),
-                const Spacer(),
+                TextButton(
+                  onPressed: _isLoading ? null : _guestLogin,
+                  child: Text(
+                    'Continue as Guest',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
               ],
             ),
           ),

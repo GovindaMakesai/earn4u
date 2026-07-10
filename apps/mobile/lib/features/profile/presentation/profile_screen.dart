@@ -8,6 +8,7 @@ import '../../../core/data/app_repository.dart';
 import '../../../core/theme/app_animations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/shell_metrics.dart';
 import '../../../shared/widgets/avatar_frame.dart';
 import '../../../shared/widgets/premium_button.dart';
 import '../../../shared/widgets/stat_badge.dart';
@@ -101,6 +102,7 @@ class ProfileScreen extends ConsumerWidget {
                         expanded: true,
                         onPressed: () => context.push('/gifts'),
                       ),
+                      SizedBox(height: ShellMetrics.scrollBottomPadding(context)),
                     ],
                   ),
                 ),

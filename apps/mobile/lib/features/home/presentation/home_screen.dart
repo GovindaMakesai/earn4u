@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../../../core/constants/demo_content.dart';
 import '../../../core/data/app_repository.dart';
+import '../../../core/theme/shell_metrics.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/category_chip.dart';
@@ -135,7 +136,12 @@ class HomeScreen extends ConsumerWidget {
             loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
             error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
             data: (streams) => SliverPadding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 120),
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                ShellMetrics.scrollBottomPadding(context),
+              ),
               sliver: streams.isEmpty
                   ? const SliverToBoxAdapter(child: SizedBox.shrink())
                   : SliverGrid(

@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_shadows.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/theme/shell_metrics.dart';
 
 class MainShell extends ConsumerWidget {
   final Widget child;
@@ -24,13 +25,14 @@ class MainShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final path = GoRouterState.of(context).uri.path;
     final selected = _index(path);
+    final bottomMargin = ShellMetrics.navBarBottomMargin(context);
 
     return Scaffold(
       backgroundColor: AppColors.richBlack,
       body: child,
       extendBody: true,
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, bottomMargin),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
           child: Container(
@@ -40,38 +42,35 @@ class MainShell extends ConsumerWidget {
               border: Border.all(color: AppColors.glassBorder),
               boxShadow: AppShadows.elevated,
             ),
-            child: SafeArea(
-              top: false,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _NavItem(
-                    icon: PhosphorIcons.houseBold,
-                    label: 'Home',
-                    isSelected: selected == 0,
-                    onTap: () => context.go('/'),
-                  ),
-                  _NavItem(
-                    icon: PhosphorIcons.compassBold,
-                    label: 'Discover',
-                    isSelected: selected == 1,
-                    onTap: () => context.go('/discover'),
-                  ),
-                  _GoLiveButton(onTap: () => context.push('/live-hub')),
-                  _NavItem(
-                    icon: PhosphorIcons.chatCircleBold,
-                    label: 'Messages',
-                    isSelected: selected == 3,
-                    onTap: () => context.go('/messages'),
-                  ),
-                  _NavItem(
-                    icon: PhosphorIcons.userBold,
-                    label: 'Profile',
-                    isSelected: selected == 4,
-                    onTap: () => context.go('/profile'),
-                  ),
-                ],
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _NavItem(
+                  icon: PhosphorIcons.houseBold,
+                  label: 'Home',
+                  isSelected: selected == 0,
+                  onTap: () => context.go('/'),
+                ),
+                _NavItem(
+                  icon: PhosphorIcons.compassBold,
+                  label: 'Discover',
+                  isSelected: selected == 1,
+                  onTap: () => context.go('/discover'),
+                ),
+                _GoLiveButton(onTap: () => context.push('/live-hub')),
+                _NavItem(
+                  icon: PhosphorIcons.chatCircleBold,
+                  label: 'Messages',
+                  isSelected: selected == 3,
+                  onTap: () => context.go('/messages'),
+                ),
+                _NavItem(
+                  icon: PhosphorIcons.userBold,
+                  label: 'Profile',
+                  isSelected: selected == 4,
+                  onTap: () => context.go('/profile'),
+                ),
+              ],
             ),
           ),
         ),
