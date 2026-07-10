@@ -20,8 +20,7 @@ services:
     plan: free
     rootDir: api
     buildCommand: npm ci && npm run build
-    preDeployCommand: node scripts/migrate.js
-    startCommand: node dist/main
+    startCommand: node scripts/migrate.js && node dist/main
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV

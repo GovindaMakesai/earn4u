@@ -1,6 +1,6 @@
 /**
- * Runs the initial SQL migration against PostgreSQL.
- * Used by Render preDeployCommand.
+ * Runs the initial SQL migration against PostgreSQL on startup.
+ * Skips if the schema is already present (safe for Render free tier restarts).
  */
 const fs = require('fs');
 const path = require('path');
@@ -16,19 +16,23 @@ async function main() {
     ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
   });
 
-  const sqlPath = path.join(__dirname, '../src/database/migrations/001_initial_schema.sql');
-  const sql = fs.readFileSync(sqlPath, 'utf8');
-
   await client.connect();
   try {
-    await client.query(sql);
-    await client.query(`
-      DO $$ BEGIN
-        CREATE TYPE users.verification_type AS ENUM ('identity','creator','agency');
-      EXCEPTION WHEN duplicate_object THEN NULL;
-      END $$;
-      ALTER TABLE users.profiles ADD COLUMN IF NOT EXISTS verification_type users.verification_type;
+    const { rows } = await client.query(`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'users' AND table_name = 'profiles'
+      ) AS ready
     `);
+
+    if (rows[0]?.ready) {
+      console.log('Database schema already exists — skipping migration');
+      return;
+    }
+
+    const sqlPath = path.join(__dirname, '../src/database/migrations/001_initial_schema.sql');
+    const sql = fs.readFileSync(sqlPath, 'utf8');
+    await client.query(sql);
     console.log('Migration completed successfully');
   } finally {
     await client.end();
