@@ -1,169 +1,113 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
+import '../../../core/auth/auth_provider.dart';
+import '../../../core/data/app_repository.dart';
 import '../../../core/theme/app_animations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/avatar_frame.dart';
-import '../../../shared/widgets/glass_surface.dart';
 import '../../../shared/widgets/premium_button.dart';
 import '../../../shared/widgets/stat_badge.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(profileProvider);
+
     return Scaffold(
       backgroundColor: AppColors.richBlack,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 200,
-            pinned: true,
-            backgroundColor: AppColors.richBlack,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: const BoxDecoration(gradient: AppColors.gradientHero),
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    Positioned(
-                      bottom: -30,
-                      child: AvatarFrame(initials: 'You', size: 88, vipLevel: 12)
-                          .animate()
-                          .fadeIn(duration: AppAnimations.entrance)
-                          .scale(begin: const Offset(0.9, 0.9)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              IconButton(icon: Icon(PhosphorIcons.gearBold, color: AppColors.textSecondary), onPressed: () {}),
-            ],
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 48, AppSpacing.lg, 0),
-              child: Column(
-                children: [
-                  Text('YourName', style: Theme.of(context).textTheme.headlineLarge),
-                  const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      VipBadge(level: 12),
-                      SizedBox(width: AppSpacing.sm),
-                      WealthBadge(level: 8),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _StatColumn(value: '24.5K', label: 'Followers'),
-                      _StatColumn(value: '1.2M', label: 'Gifts Received'),
-                      _StatColumn(value: '89', label: 'Streams'),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  Row(
-                    children: [
-                      Expanded(child: PremiumButton(label: 'Edit Profile', onPressed: () {})),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: PremiumButton(
-                          label: 'Wallet',
-                          isGold: true,
-                          icon: PhosphorIcons.walletBold,
-                          onPressed: () => context.push('/wallet'),
+      body: profileAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Failed to load profile: $e')),
+        data: (profile) {
+          final displayName = profile['displayName'] as String? ?? 'User';
+          final username = profile['username'] as String? ?? '';
+          final vipLevel = (profile['vipLevel'] as num?)?.toInt() ?? 0;
+          final wealthLevel = (profile['wealthLevel'] as num?)?.toInt() ?? 0;
+          final followers = (profile['followerCount'] as num?)?.toInt() ?? 0;
+          final following = (profile['followingCount'] as num?)?.toInt() ?? 0;
+
+          return CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 200,
+                pinned: true,
+                backgroundColor: AppColors.richBlack,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    decoration: const BoxDecoration(gradient: AppColors.gradientHero),
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        Positioned(
+                          bottom: -30,
+                          child: AvatarFrame(initials: displayName.substring(0, 1), size: 88, vipLevel: vipLevel)
+                              .animate()
+                              .fadeIn(duration: AppAnimations.entrance)
+                              .scale(begin: const Offset(0.9, 0.9)),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  PremiumButton(
-                    label: 'Gift Gallery',
-                    icon: PhosphorIcons.giftBold,
-                    expanded: true,
-                    onPressed: () => context.push('/gifts'),
+                ),
+                actions: [
+                  IconButton(
+                    icon: Icon(PhosphorIcons.signOutBold, color: AppColors.textSecondary),
+                    onPressed: () async {
+                      await ref.read(authProvider.notifier).logout();
+                      if (context.mounted) context.go('/login');
+                    },
                   ),
                 ],
               ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Text('Achievements', style: Theme.of(context).textTheme.headlineSmall),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 120),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: AppSpacing.md,
-                crossAxisSpacing: AppSpacing.md,
-                childAspectRatio: 0.85,
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 48, AppSpacing.lg, 0),
+                  child: Column(
+                    children: [
+                      Text(displayName, style: Theme.of(context).textTheme.headlineLarge),
+                      Text('@$username', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                      const SizedBox(height: AppSpacing.sm),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          VipBadge(level: vipLevel),
+                          const SizedBox(width: AppSpacing.sm),
+                          WealthBadge(level: wealthLevel),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.xxl),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          StatBadge(icon: Icons.people, label: 'Followers', value: '$followers'),
+                          StatBadge(icon: Icons.person_add, label: 'Following', value: '$following'),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.xxl),
+                      PremiumButton(
+                        label: 'Wallet & Store',
+                        expanded: true,
+                        onPressed: () => context.push('/wallet'),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      PremiumButton(
+                        label: 'Gift Showcase',
+                        expanded: true,
+                        onPressed: () => context.push('/gifts'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              delegate: SliverChildListDelegate([
-                _Achievement(icon: '🏆', title: 'Top Gifter', unlocked: true),
-                _Achievement(icon: '🔥', title: '7 Day Streak', unlocked: true),
-                _Achievement(icon: '👑', title: 'VIP Elite', unlocked: true),
-                _Achievement(icon: '🎤', title: 'Voice Host', unlocked: false),
-                _Achievement(icon: '⚔️', title: 'PK Champion', unlocked: false),
-                _Achievement(icon: '💎', title: 'Whale', unlocked: false),
-              ]),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatColumn extends StatelessWidget {
-  final String value;
-  final String label;
-
-  const _StatColumn({required this.value, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(value, style: AppTypography.stat.copyWith(fontSize: 22)),
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
-      ],
-    );
-  }
-}
-
-class _Achievement extends StatelessWidget {
-  final String icon;
-  final String title;
-  final bool unlocked;
-
-  const _Achievement({required this.icon, required this.title, required this.unlocked});
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassSurface(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Opacity(
-        opacity: unlocked ? 1 : 0.4,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(icon, style: const TextStyle(fontSize: 28)),
-            const SizedBox(height: AppSpacing.sm),
-            Text(title, style: Theme.of(context).textTheme.labelMedium, textAlign: TextAlign.center, maxLines: 2),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }

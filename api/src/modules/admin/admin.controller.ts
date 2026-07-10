@@ -28,8 +28,15 @@ export class AdminController {
     @Query('q') query: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
+    @Query('status') status?: UserStatus,
   ) {
-    return this.adminService.searchUsers(query ?? '', page, limit);
+    return this.adminService.searchUsers(query ?? '', page, limit, status);
+  }
+
+  @Get('users/:userId')
+  @ApiOperation({ summary: 'Get user details' })
+  getUser(@Param('userId') userId: string) {
+    return this.adminService.getUser(userId);
   }
 
   @Patch('users/:userId/status')

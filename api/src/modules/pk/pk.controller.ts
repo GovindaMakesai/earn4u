@@ -28,6 +28,12 @@ export class PkController {
     );
   }
 
+  @Get('leaderboard')
+  @ApiOperation({ summary: 'PK leaderboard' })
+  leaderboard(@Query('period') period?: string) {
+    return this.pkService.getLeaderboard(period);
+  }
+
   @Post(':battleId/accept')
   @ApiOperation({ summary: 'Accept PK invitation' })
   accept(@Param('battleId') battleId: string) {
@@ -37,12 +43,6 @@ export class PkController {
   @Get(':battleId')
   @ApiOperation({ summary: 'Get battle status' })
   getBattle(@Param('battleId') battleId: string) {
-    return this.pkService.addScore(battleId, 'side_a', 0);
-  }
-
-  @Get('leaderboard')
-  @ApiOperation({ summary: 'PK leaderboard' })
-  leaderboard(@Query('period') period?: string) {
-    return this.pkService.getLeaderboard(period);
+    return this.pkService.getBattle(battleId);
   }
 }

@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/auth/auth_provider.dart';
 import '../../../core/theme/app_animations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -8,17 +11,18 @@ import '../../../shared/widgets/glass_surface.dart';
 import '../../../shared/widgets/premium_button.dart';
 import '../../shell/main_shell.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  String? _error;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 GlassSurface(
                   child: Column(
                     children: [
+                      if (_error != null) ...[
+                        Text(_error!, style: const TextStyle(color: AppColors.live)),
+                        const SizedBox(height: AppSpacing.md),
+                      ],
                       TextField(
                         controller: _emailController,
                         style: const TextStyle(color: AppColors.textPrimary),
@@ -86,22 +94,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         label: 'Sign In',
                         expanded: true,
                         isLoading: _isLoading,
-                        onPressed: () {
-                          setState(() => _isLoading = true);
-                          Future.delayed(const Duration(milliseconds: 800), () {
-                            if (mounted) {
-                              setState(() => _isLoading = false);
-                              context.go('/');
-                            }
-                          });
-                        },
+                        onPressed: _signIn,
                       ),
                     ],
                   ),
                 ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.08, end: 0),
                 const SizedBox(height: AppSpacing.lg),
                 TextButton(
-                  onPressed: () => context.go('/'),
+                  onPressed: _isLoading ? null : _guestLogin,
                   child: Text(
                     'Continue as Guest',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.electricBlueLight),
@@ -114,6 +114,43 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _signIn() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      await ref.read(authProvider.notifier).login(
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
+      if (mounted) context.go('/');
+    } on DioException catch (e) {
+      setState(() => _error = ref.read(apiClientProvider).apiErrorMessage(e, fallback: 'Login failed'));
+    } catch (e) {
+      setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _guestLogin() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      await ref.read(authProvider.notifier).guestLogin();
+      if (mounted) context.go('/');
+    } on DioException catch (e) {
+      setState(() => _error = ref.read(apiClientProvider).apiErrorMessage(e, fallback: 'Guest login failed'));
+    } catch (e) {
+      setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override

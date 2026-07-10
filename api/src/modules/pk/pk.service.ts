@@ -84,6 +84,10 @@ export class PkService {
     return battle;
   }
 
+  getBattle(battleId: string): PkBattle | null {
+    return this.battles.get(battleId) ?? null;
+  }
+
   getLeaderboard(period = 'weekly') {
     void period;
     return Array.from(this.battles.values())

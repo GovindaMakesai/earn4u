@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/demo_content.dart';
-import '../../../core/theme/app_animations.dart';
+import '../../../core/data/app_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/live_stream_card.dart';
 
-class DiscoverScreen extends StatelessWidget {
+class DiscoverScreen extends ConsumerWidget {
   const DiscoverScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final streamsAsync = ref.watch(streamsProvider);
+
     return Scaffold(
       backgroundColor: AppColors.richBlack,
       body: CustomScrollView(
@@ -21,40 +23,44 @@ class DiscoverScreen extends StatelessWidget {
             title: Text('Discover', style: Theme.of(context).textTheme.headlineLarge),
             backgroundColor: AppColors.richBlack,
           ),
-          SliverToBoxAdapter(
-            child: Padding(
+          streamsAsync.when(
+            loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
+            error: (e, _) => SliverFillRemaining(child: Center(child: Text('Error: $e'))),
+            data: (streams) => SliverPadding(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  border: Border.all(color: AppColors.borderSubtle),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.search, color: AppColors.textTertiary, size: 20),
-                    const SizedBox(width: AppSpacing.md),
-                    Text('Search creators, rooms, tags...', style: Theme.of(context).textTheme.bodyMedium),
-                  ],
-                ),
-              ),
-            ).animate().fadeIn(duration: AppAnimations.normal),
-          ),
-          const SliverToBoxAdapter(child: SectionHeader(title: 'Rising Stars')),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 120),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: AppSpacing.md,
-                crossAxisSpacing: AppSpacing.md,
-                childAspectRatio: 0.72,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, i) => LiveStreamCard(data: LiveCardData.fromDemo(i + 4), animationIndex: i),
-                childCount: 4,
-              ),
+              sliver: streams.isEmpty
+                  ? const SliverFillRemaining(
+                      child: Center(child: Text('No streams to discover', style: TextStyle(color: AppColors.textSecondary))),
+                    )
+                  : SliverGrid(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: AppSpacing.md,
+                        crossAxisSpacing: AppSpacing.md,
+                        childAspectRatio: 0.72,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final stream = streams[index];
+                          return GestureDetector(
+                            onTap: () => context.go('/live/${stream['id']}'),
+                            child: LiveStreamCard(
+                              data: LiveCardData(
+                                name: stream['title'] as String? ?? 'Stream',
+                                category: stream['category'] as String? ?? 'general',
+                                viewers: (stream['viewerCount'] as num?)?.toInt() ?? 0,
+                                isLive: stream['status'] == 'live',
+                                vipLevel: 0,
+                                type: ContentType.live,
+                                gradientIndex: index,
+                              ),
+                              animationIndex: index,
+                            ),
+                          );
+                        },
+                        childCount: streams.length,
+                      ),
+                    ),
             ),
           ),
         ],
