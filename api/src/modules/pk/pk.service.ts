@@ -57,7 +57,11 @@ export class PkService {
     return battle;
   }
 
-  addScore(battleId: string, side: 'side_a' | 'side_b', amount: number): PkBattle | null {
+  addScore(
+    battleId: string,
+    side: 'side_a' | 'side_b',
+    amount: number,
+  ): PkBattle | null {
     const battle = this.battles.get(battleId);
     if (!battle || battle.status !== 'active') return null;
 
@@ -73,13 +77,15 @@ export class PkService {
 
     battle.status = 'completed';
     if (battle.totalScoreA > battle.totalScoreB) battle.winnerSide = 'side_a';
-    else if (battle.totalScoreB > battle.totalScoreA) battle.winnerSide = 'side_b';
+    else if (battle.totalScoreB > battle.totalScoreA)
+      battle.winnerSide = 'side_b';
     else battle.winnerSide = 'draw';
 
     return battle;
   }
 
-  getLeaderboard(_period = 'weekly') {
+  getLeaderboard(period = 'weekly') {
+    void period;
     return Array.from(this.battles.values())
       .filter((b) => b.status === 'completed')
       .slice(0, 50);

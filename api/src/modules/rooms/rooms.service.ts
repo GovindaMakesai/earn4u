@@ -49,7 +49,9 @@ export class RoomsService {
 
   findActive(category?: string): VoiceRoom[] {
     return Array.from(this.rooms.values())
-      .filter((r) => r.status === 'active' && (!category || r.category === category))
+      .filter(
+        (r) => r.status === 'active' && (!category || r.category === category),
+      )
       .sort((a, b) => b.listenerCount - a.listenerCount);
   }
 
@@ -58,6 +60,7 @@ export class RoomsService {
   }
 
   join(roomId: string, userId: string): VoiceRoom | null {
+    void userId;
     const room = this.rooms.get(roomId);
     if (!room || room.status !== 'active') return null;
     room.listenerCount++;

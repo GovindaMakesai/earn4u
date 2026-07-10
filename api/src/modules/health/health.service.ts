@@ -42,10 +42,13 @@ export class HealthService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    const nodeEnv = this.config.get('NODE_ENV');
+    const nodeEnv = this.config.get<string>('NODE_ENV');
     if (nodeEnv === 'production') {
       const accessSecret = this.config.get<string>('JWT_ACCESS_SECRET', '');
-      if (accessSecret.includes('dev-secret') || accessSecret.includes('change-me')) {
+      if (
+        accessSecret.includes('dev-secret') ||
+        accessSecret.includes('change-me')
+      ) {
         throw new Error('FATAL: Default JWT secrets detected in production');
       }
     }

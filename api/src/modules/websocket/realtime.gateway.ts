@@ -14,7 +14,9 @@ import { Logger } from '@nestjs/common';
   cors: { origin: '*' },
   namespace: '/realtime',
 })
-export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class RealtimeGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -42,7 +44,7 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
       this.userSockets.set(data.userId, new Set());
     }
     this.userSockets.get(data.userId)!.add(client.id);
-    client.join(`user:${data.userId}`);
+    void client.join(`user:${data.userId}`);
     return { authenticated: true };
   }
 
@@ -51,7 +53,7 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { roomId: string },
   ) {
-    client.join(`room:${data.roomId}`);
+    void client.join(`room:${data.roomId}`);
     this.server.to(`room:${data.roomId}`).emit('room:user-joined', {
       socketId: client.id,
       roomId: data.roomId,
@@ -82,7 +84,8 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   broadcastGift(contextType: string, contextId: string, giftEvent: unknown) {
-    const room = contextType === 'room' ? `room:${contextId}` : `stream:${contextId}`;
+    const room =
+      contextType === 'room' ? `room:${contextId}` : `stream:${contextId}`;
     this.server.to(room).emit(`${contextType}:gift`, giftEvent);
   }
 

@@ -1,7 +1,16 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
-import { GiftCatalog, GiftEvent, GiftContextType } from './entities/gift.entity';
+import {
+  GiftCatalog,
+  GiftEvent,
+  GiftContextType,
+} from './entities/gift.entity';
 import { WalletService } from '../wallet/wallet.service';
 import { Profile } from '../users/entities/profile.entity';
 import { UserStatus } from '../users/enums/user-role.enum';
@@ -22,7 +31,10 @@ export class GiftsService {
     private dataSource: DataSource,
   ) {}
 
-  async getCatalog(category?: string, vipLevel?: number): Promise<GiftCatalog[]> {
+  async getCatalog(
+    category?: string,
+    vipLevel?: number,
+  ): Promise<GiftCatalog[]> {
     const query = this.giftCatalogRepo
       .createQueryBuilder('gift')
       .where('gift.is_active = true')
@@ -49,19 +61,30 @@ export class GiftsService {
     }
 
     const [gift, sender, receiver] = await Promise.all([
-      this.giftCatalogRepo.findOne({ where: { id: dto.giftId, isActive: true } }),
+      this.giftCatalogRepo.findOne({
+        where: { id: dto.giftId, isActive: true },
+      }),
       this.profileRepo.findOne({ where: { id: senderId } }),
       this.profileRepo.findOne({ where: { id: dto.receiverId } }),
     ]);
 
     if (!gift) {
-      throw new NotFoundException({ code: 'NOT_FOUND', message: 'Gift not found' });
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Gift not found',
+      });
     }
     if (!sender || sender.status !== UserStatus.ACTIVE) {
-      throw new ForbiddenException({ code: 'FORBIDDEN', message: 'Sender account is not active' });
+      throw new ForbiddenException({
+        code: 'FORBIDDEN',
+        message: 'Sender account is not active',
+      });
     }
     if (!receiver || receiver.status !== UserStatus.ACTIVE) {
-      throw new NotFoundException({ code: 'NOT_FOUND', message: 'Receiver not found' });
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Receiver not found',
+      });
     }
     if (sender.vipLevel < gift.minVipLevel) {
       throw new ForbiddenException({
@@ -125,7 +148,10 @@ export class GiftsService {
       .getRawMany();
   }
 
-  private async getComboCount(senderId: string, dto: SendGiftDto): Promise<number> {
+  private async getComboCount(
+    senderId: string,
+    dto: SendGiftDto,
+  ): Promise<number> {
     const recent = await this.giftEventRepo.findOne({
       where: {
         senderId,

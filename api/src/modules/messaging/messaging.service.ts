@@ -48,7 +48,10 @@ export class MessagingService {
   getUserConversations(userId: string): Conversation[] {
     return Array.from(this.conversations.values())
       .filter((c) => c.memberIds.includes(userId))
-      .sort((a, b) => (b.lastMessageAt?.getTime() ?? 0) - (a.lastMessageAt?.getTime() ?? 0));
+      .sort(
+        (a, b) =>
+          (b.lastMessageAt?.getTime() ?? 0) - (a.lastMessageAt?.getTime() ?? 0),
+      );
   }
 
   sendMessage(
@@ -59,7 +62,8 @@ export class MessagingService {
     mediaUrl?: string,
   ): Message | null {
     const conversation = this.conversations.get(conversationId);
-    if (!conversation || !conversation.memberIds.includes(senderId)) return null;
+    if (!conversation || !conversation.memberIds.includes(senderId))
+      return null;
 
     const message: Message = {
       id: randomUUID(),

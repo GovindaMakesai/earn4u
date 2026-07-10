@@ -30,7 +30,10 @@ export class WalletService {
   async getWallet(userId: string): Promise<Wallet> {
     const wallet = await this.walletRepo.findOne({ where: { userId } });
     if (!wallet) {
-      throw new NotFoundException({ code: 'NOT_FOUND', message: 'Wallet not found' });
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Wallet not found',
+      });
     }
     return wallet;
   }
@@ -101,7 +104,17 @@ export class WalletService {
     }
 
     return this.dataSource.transaction((manager) =>
-      this.applyDebit(manager, userId, currency, amount, category, idempotencyKey, referenceType, referenceId, metadata),
+      this.applyDebit(
+        manager,
+        userId,
+        currency,
+        amount,
+        category,
+        idempotencyKey,
+        referenceType,
+        referenceId,
+        metadata,
+      ),
     );
   }
 
@@ -115,13 +128,28 @@ export class WalletService {
     referenceId?: string,
     metadata?: Record<string, unknown>,
   ): Promise<{ wallet: Wallet; transaction: Transaction }> {
-    const existing = await this.transactionRepo.findOne({ where: { idempotencyKey } });
+    const existing = await this.transactionRepo.findOne({
+      where: { idempotencyKey },
+    });
     if (existing) {
-      throw new ConflictException({ code: 'CONFLICT', message: 'Duplicate transaction' });
+      throw new ConflictException({
+        code: 'CONFLICT',
+        message: 'Duplicate transaction',
+      });
     }
 
     return this.dataSource.transaction((manager) =>
-      this.applyCredit(manager, userId, currency, amount, category, idempotencyKey, referenceType, referenceId, metadata),
+      this.applyCredit(
+        manager,
+        userId,
+        currency,
+        amount,
+        category,
+        idempotencyKey,
+        referenceType,
+        referenceId,
+        metadata,
+      ),
     );
   }
 
@@ -160,7 +188,11 @@ export class WalletService {
         params.creditIdempotencyKey,
         'gift',
         params.giftId,
-        { ...params.metadata, senderId: params.senderId, coinAmount: params.coinAmount },
+        {
+          ...params.metadata,
+          senderId: params.senderId,
+          coinAmount: params.coinAmount,
+        },
       );
 
       return { debitTx, creditTx };
@@ -213,7 +245,10 @@ export class WalletService {
     });
 
     if (!wallet) {
-      throw new NotFoundException({ code: 'NOT_FOUND', message: 'Wallet not found' });
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Wallet not found',
+      });
     }
 
     const currentBalance = this.getBalance(wallet, currency);
@@ -269,7 +304,10 @@ export class WalletService {
     });
 
     if (!wallet) {
-      throw new NotFoundException({ code: 'NOT_FOUND', message: 'Wallet not found' });
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Wallet not found',
+      });
     }
 
     const balanceAfter = this.getBalance(wallet, currency) + amount;

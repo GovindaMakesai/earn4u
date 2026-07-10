@@ -11,8 +11,16 @@ const VIP_TIERS: VipTier[] = Array.from({ length: 20 }, (_, i) => {
   const level = i + 1;
   return {
     level,
-    name: level <= 5 ? 'Bronze' : level <= 10 ? 'Silver' : level <= 15 ? 'Gold' : 'Platinum',
-    priceMonthly: level <= 5 ? 4.99 : level <= 10 ? 9.99 : level <= 15 ? 19.99 : 49.99,
+    name:
+      level <= 5
+        ? 'Bronze'
+        : level <= 10
+          ? 'Silver'
+          : level <= 15
+            ? 'Gold'
+            : 'Platinum',
+    priceMonthly:
+      level <= 5 ? 4.99 : level <= 10 ? 9.99 : level <= 15 ? 19.99 : 49.99,
     benefits: [
       'Exclusive avatar frame',
       ...(level >= 3 ? ['Entry effect'] : []),

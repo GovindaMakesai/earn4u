@@ -39,7 +39,9 @@ export class StreamsService {
 
   findLive(category?: string): LiveStream[] {
     return Array.from(this.streams.values())
-      .filter((s) => s.status === 'live' && (!category || s.category === category))
+      .filter(
+        (s) => s.status === 'live' && (!category || s.category === category),
+      )
       .sort((a, b) => b.viewerCount - a.viewerCount);
   }
 

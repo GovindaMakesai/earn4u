@@ -19,7 +19,12 @@ export class MessagingController {
   @ApiOperation({ summary: 'Create conversation' })
   create(
     @UserId() creatorId: string,
-    @Body() body: { type?: 'direct' | 'group'; participantIds: string[]; name?: string },
+    @Body()
+    body: {
+      type?: 'direct' | 'group';
+      participantIds: string[];
+      name?: string;
+    },
   ) {
     return this.messagingService.createConversation(
       creatorId,
@@ -43,7 +48,12 @@ export class MessagingController {
   sendMessage(
     @Param('conversationId') conversationId: string,
     @UserId() senderId: string,
-    @Body() body: { type: 'text' | 'image' | 'video' | 'audio'; content?: string; mediaUrl?: string },
+    @Body()
+    body: {
+      type: 'text' | 'image' | 'video' | 'audio';
+      content?: string;
+      mediaUrl?: string;
+    },
   ) {
     return this.messagingService.sendMessage(
       conversationId,

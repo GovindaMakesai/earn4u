@@ -25,7 +25,10 @@ export class UsersService {
       relations: ['wallet'],
     });
     if (!profile) {
-      throw new NotFoundException({ code: 'NOT_FOUND', message: 'User not found' });
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'User not found',
+      });
     }
     return profile;
   }
@@ -35,7 +38,10 @@ export class UsersService {
       where: { username, status: UserStatus.ACTIVE },
     });
     if (!profile) {
-      throw new NotFoundException({ code: 'NOT_FOUND', message: 'User not found' });
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'User not found',
+      });
     }
     return profile;
   }
@@ -48,14 +54,20 @@ export class UsersService {
 
   async follow(followerId: string, followingId: string): Promise<void> {
     if (followerId === followingId) {
-      throw new BadRequestException({ code: 'VALIDATION_ERROR', message: 'Cannot follow yourself' });
+      throw new BadRequestException({
+        code: 'VALIDATION_ERROR',
+        message: 'Cannot follow yourself',
+      });
     }
 
     const existing = await this.followRepo.findOne({
       where: { followerId, followingId },
     });
     if (existing) {
-      throw new ConflictException({ code: 'CONFLICT', message: 'Already following' });
+      throw new ConflictException({
+        code: 'CONFLICT',
+        message: 'Already following',
+      });
     }
 
     await this.followRepo.save({ followerId, followingId });

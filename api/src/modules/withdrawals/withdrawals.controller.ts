@@ -13,9 +13,17 @@ export class WithdrawalsController {
   @ApiOperation({ summary: 'Request withdrawal' })
   create(
     @UserId() userId: string,
-    @Body() body: { amountDiamonds: number; method: 'bank_transfer' | 'upi' | 'paypal' },
+    @Body()
+    body: {
+      amountDiamonds: number;
+      method: 'bank_transfer' | 'upi' | 'paypal';
+    },
   ) {
-    return this.withdrawalsService.create(userId, body.amountDiamonds, body.method);
+    return this.withdrawalsService.create(
+      userId,
+      body.amountDiamonds,
+      body.method,
+    );
   }
 
   @Get()

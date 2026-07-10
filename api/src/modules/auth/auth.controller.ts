@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Req, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from '../../common/decorators/auth.decorators';
@@ -42,7 +49,8 @@ export class AuthController {
   @Post('login/phone')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request phone OTP' })
-  requestPhoneOtp(@Body() _dto: PhoneOtpDto) {
+  requestPhoneOtp(@Body() dto: PhoneOtpDto) {
+    void dto;
     return { otpSent: true, expiresIn: 300 };
   }
 

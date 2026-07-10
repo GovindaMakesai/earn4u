@@ -16,7 +16,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let status: number = HttpStatus.INTERNAL_SERVER_ERROR;
     let code = 'INTERNAL_ERROR';
     let message = 'An unexpected error occurred';
     let details: unknown = undefined;
@@ -31,7 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message = (resp.message as string) || exception.message;
         details = resp.details;
       } else {
-        message = exceptionResponse as string;
+        message = exceptionResponse;
         code = exception.name;
       }
     }

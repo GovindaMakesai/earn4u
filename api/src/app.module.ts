@@ -39,7 +39,10 @@ import { Profile } from './modules/users/entities/profile.entity';
           level: config.get('LOG_LEVEL', 'info'),
           transport:
             config.get('NODE_ENV') === 'development'
-              ? { target: 'pino-pretty', options: { colorize: true, singleLine: true } }
+              ? {
+                  target: 'pino-pretty',
+                  options: { colorize: true, singleLine: true },
+                }
               : undefined,
           redact: ['req.headers.authorization', 'req.headers.cookie'],
           serializers: {
@@ -62,7 +65,10 @@ import { Profile } from './modules/users/entities/profile.entity';
         username: config.get('DATABASE_USER'),
         password: config.get('DATABASE_PASSWORD'),
         database: config.get('DATABASE_NAME'),
-        ssl: config.get('DATABASE_SSL') === 'true',
+        ssl:
+          config.get('DATABASE_SSL') === 'true'
+            ? { rejectUnauthorized: false }
+            : false,
         autoLoadEntities: true,
         synchronize: false,
         logging: config.get('NODE_ENV') === 'development',
@@ -78,10 +84,12 @@ import { Profile } from './modules/users/entities/profile.entity';
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => [{
-        ttl: config.get<number>('THROTTLE_TTL', 60000),
-        limit: config.get<number>('THROTTLE_LIMIT', 100),
-      }],
+      useFactory: (config: ConfigService) => [
+        {
+          ttl: config.get<number>('THROTTLE_TTL', 60000),
+          limit: config.get<number>('THROTTLE_LIMIT', 100),
+        },
+      ],
     }),
 
     RedisModule,

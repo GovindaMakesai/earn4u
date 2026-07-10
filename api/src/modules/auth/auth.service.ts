@@ -9,7 +9,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { randomUUID, createHash } from 'crypto';
-import { UserCredentials, Session, Device } from './entities/user-credentials.entity';
+import {
+  UserCredentials,
+  Session,
+  Device,
+} from './entities/user-credentials.entity';
 import { Profile } from '../users/entities/profile.entity';
 import { Wallet } from '../wallet/entities/wallet.entity';
 import { RegisterDto, LoginDto, GuestLoginDto } from './dto/auth.dto';
@@ -229,7 +233,9 @@ export class AuthService {
       order: { createdAt: 'DESC' },
     });
 
-    const active = sessions.filter((s) => !s.revokedAt && s.expiresAt > new Date());
+    const active = sessions.filter(
+      (s) => !s.revokedAt && s.expiresAt > new Date(),
+    );
     if (active.length >= this.MAX_SESSIONS) {
       const toRevoke = active.slice(this.MAX_SESSIONS - 1);
       for (const session of toRevoke) {
@@ -273,7 +279,29 @@ export class AuthService {
   }
 
   private sanitizeProfile(profile: Profile): Partial<Profile> {
-    const { id, username, displayName, avatarUrl, role, vipLevel, wealthLevel, popularityLevel, isVerified, isGuest } = profile;
-    return { id, username, displayName, avatarUrl, role, vipLevel, wealthLevel, popularityLevel, isVerified, isGuest };
+    const {
+      id,
+      username,
+      displayName,
+      avatarUrl,
+      role,
+      vipLevel,
+      wealthLevel,
+      popularityLevel,
+      isVerified,
+      isGuest,
+    } = profile;
+    return {
+      id,
+      username,
+      displayName,
+      avatarUrl,
+      role,
+      vipLevel,
+      wealthLevel,
+      popularityLevel,
+      isVerified,
+      isGuest,
+    };
   }
 }

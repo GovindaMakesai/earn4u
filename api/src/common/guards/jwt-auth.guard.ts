@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { IS_PUBLIC_KEY } from '../decorators/auth.decorators';
 import { Profile } from '../../modules/users/entities/profile.entity';
 import { UserStatus } from '../../modules/users/enums/user-role.enum';
+import { AuthenticatedRequest, JwtPayload } from '../types/request.types';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -30,7 +31,7 @@ export class JwtAuthGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const token = this.extractToken(request);
 
     if (!token) {
@@ -41,7 +42,7 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token);
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
       const profile = await this.profileRepo.findOne({
         where: { id: payload.sub },
         select: ['id', 'status', 'role', 'username', 'vipLevel'],
@@ -54,7 +55,11 @@ export class JwtAuthGuard implements CanActivate {
         });
       }
 
-      request.user = { ...payload, role: profile.role, vipLevel: profile.vipLevel };
+      request.user = {
+        ...payload,
+        role: profile.role,
+        vipLevel: profile.vipLevel,
+      };
     } catch (error) {
       if (error instanceof ForbiddenException) throw error;
       throw new UnauthorizedException({
@@ -66,9 +71,9 @@ export class JwtAuthGuard implements CanActivate {
     return true;
   }
 
-  private extractToken(request: { headers: Record<string, string> }): string | null {
+  private extractToken(request: AuthenticatedRequest): string | null {
     const auth = request.headers.authorization;
-    if (!auth) return null;
+    if (!auth || Array.isArray(auth)) return null;
     const [type, token] = auth.split(' ');
     return type === 'Bearer' ? token : null;
   }

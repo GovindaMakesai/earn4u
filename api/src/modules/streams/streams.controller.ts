@@ -12,7 +12,7 @@ export class StreamsController {
   @Post()
   @ApiOperation({ summary: 'Start a livestream' })
   start(@UserId() hostId: string, @Body() body: Record<string, unknown>) {
-    const stream = this.streamsService.start(hostId, body as Parameters<StreamsService['start']>[1]);
+    const stream = this.streamsService.start(hostId, body);
     return { stream, webrtcToken: `token_${stream.webrtcRoomId}` };
   }
 
@@ -32,7 +32,10 @@ export class StreamsController {
   @ApiOperation({ summary: 'Join stream as viewer' })
   join(@Param('streamId') streamId: string) {
     const stream = this.streamsService.joinViewer(streamId);
-    return { stream, webrtcToken: stream ? `token_${stream.webrtcRoomId}` : null };
+    return {
+      stream,
+      webrtcToken: stream ? `token_${stream.webrtcRoomId}` : null,
+    };
   }
 
   @Post(':streamId/end')

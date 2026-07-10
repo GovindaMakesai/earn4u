@@ -56,7 +56,9 @@ export class WithdrawalsService {
   }
 
   getPending(): WithdrawalRequest[] {
-    return this.requests.filter((r) => ['pending', 'under_review'].includes(r.status));
+    return this.requests.filter((r) =>
+      ['pending', 'under_review'].includes(r.status),
+    );
   }
 
   approve(id: string): WithdrawalRequest | null {

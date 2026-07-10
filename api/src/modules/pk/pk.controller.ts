@@ -13,9 +13,19 @@ export class PkController {
   @ApiOperation({ summary: 'Invite to PK battle' })
   invite(
     @UserId() challengerId: string,
-    @Body() body: { opponentId: string; type?: 'solo_1v1' | 'team_2v2'; durationSeconds?: number },
+    @Body()
+    body: {
+      opponentId: string;
+      type?: 'solo_1v1' | 'team_2v2';
+      durationSeconds?: number;
+    },
   ) {
-    return this.pkService.invite(challengerId, body.opponentId, body.type, body.durationSeconds);
+    return this.pkService.invite(
+      challengerId,
+      body.opponentId,
+      body.type,
+      body.durationSeconds,
+    );
   }
 
   @Post(':battleId/accept')

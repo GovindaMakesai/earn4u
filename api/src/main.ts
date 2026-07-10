@@ -19,7 +19,10 @@ async function bootstrap() {
   const port = configService.get<number>('PORT', 3000);
   const apiPrefix = configService.get<string>('API_PREFIX', 'api/v1');
   const nodeEnv = configService.get<string>('NODE_ENV', 'development');
-  const corsOrigins = configService.get<string>('CORS_ORIGINS', 'http://localhost:3001');
+  const corsOrigins = configService.get<string>(
+    'CORS_ORIGINS',
+    'http://localhost:3001',
+  );
 
   app.use(helmet());
   app.use(compression());
@@ -41,7 +44,10 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new LoggingInterceptor(), new TransformInterceptor());
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    new TransformInterceptor(),
+  );
 
   if (nodeEnv !== 'production') {
     const swaggerConfig = new DocumentBuilder()
@@ -66,4 +72,4 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+void bootstrap();

@@ -29,7 +29,12 @@ export class UserCredentials {
   @Column({ type: 'varchar', length: 20, unique: true, nullable: true })
   phone: string | null;
 
-  @Column({ name: 'password_hash', type: 'varchar', length: 255, nullable: true })
+  @Column({
+    name: 'password_hash',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
   passwordHash: string | null;
 
   @Column({ name: 'email_verified', default: false })
@@ -41,7 +46,12 @@ export class UserCredentials {
   @Column({ name: 'two_factor_enabled', default: false })
   twoFactorEnabled: boolean;
 
-  @Column({ name: 'two_factor_secret', type: 'varchar', length: 255, nullable: true })
+  @Column({
+    name: 'two_factor_secret',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
   twoFactorSecret: string | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })

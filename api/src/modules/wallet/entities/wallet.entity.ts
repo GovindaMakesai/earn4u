@@ -92,7 +92,12 @@ export class Transaction {
   @Column({ type: 'enum', enum: TransactionCategory })
   category: TransactionCategory;
 
-  @Column({ name: 'reference_type', type: 'varchar', length: 50, nullable: true })
+  @Column({
+    name: 'reference_type',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
   referenceType: string | null;
 
   @Column({ name: 'reference_id', type: 'uuid', nullable: true })
@@ -101,7 +106,13 @@ export class Transaction {
   @Column({ type: 'jsonb', default: {} })
   metadata: Record<string, unknown>;
 
-  @Column({ name: 'idempotency_key', type: 'varchar', length: 255, unique: true, nullable: true })
+  @Column({
+    name: 'idempotency_key',
+    type: 'varchar',
+    length: 255,
+    unique: true,
+    nullable: true,
+  })
   idempotencyKey: string | null;
 
   @Column({ name: 'created_at', type: 'timestamptz', default: () => 'NOW()' })
@@ -129,7 +140,11 @@ export class CoinPackage {
   @Column({ name: 'price_usd', type: 'decimal', precision: 10, scale: 2 })
   priceUsd: number;
 
-  @Column({ type: 'enum', enum: ['ios', 'android', 'web', 'all'], default: 'all' })
+  @Column({
+    type: 'enum',
+    enum: ['ios', 'android', 'web', 'all'],
+    default: 'all',
+  })
   platform: string;
 
   @Column({ name: 'is_active', default: true })

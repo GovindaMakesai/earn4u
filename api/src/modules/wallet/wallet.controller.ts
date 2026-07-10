@@ -1,5 +1,5 @@
 import { Controller, Get, Query, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { WalletService } from './wallet.service';
 import { UserId } from '../../common/decorators/user.decorator';
 import { Currency, TransactionCategory } from './entities/wallet.entity';
@@ -25,7 +25,13 @@ export class WalletController {
     @Query('currency') currency?: Currency,
     @Query('category') category?: TransactionCategory,
   ) {
-    return this.walletService.getTransactions(userId, page, limit, currency, category);
+    return this.walletService.getTransactions(
+      userId,
+      page,
+      limit,
+      currency,
+      category,
+    );
   }
 
   @Get('coin-packages')

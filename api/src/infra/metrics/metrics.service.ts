@@ -36,7 +36,12 @@ export class MetricsService implements OnModuleInit {
     }
   }
 
-  recordRequest(method: string, route: string, status: number, durationMs: number) {
+  recordRequest(
+    method: string,
+    route: string,
+    status: number,
+    durationMs: number,
+  ) {
     this.httpRequestsTotal.inc({ method, route, status: String(status) });
     this.httpRequestDuration.observe({ method, route }, durationMs / 1000);
   }

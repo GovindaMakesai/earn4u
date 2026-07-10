@@ -61,11 +61,15 @@ export class EnvironmentVariables {
   REDIS_PASSWORD?: string;
 
   @IsString()
-  @MinLength(32, { message: 'JWT_ACCESS_SECRET must be at least 32 characters' })
+  @MinLength(32, {
+    message: 'JWT_ACCESS_SECRET must be at least 32 characters',
+  })
   JWT_ACCESS_SECRET: string;
 
   @IsString()
-  @MinLength(32, { message: 'JWT_REFRESH_SECRET must be at least 32 characters' })
+  @MinLength(32, {
+    message: 'JWT_REFRESH_SECRET must be at least 32 characters',
+  })
   JWT_REFRESH_SECRET: string;
 
   @IsString()
@@ -111,7 +115,9 @@ export class EnvironmentVariables {
   CORS_ORIGINS?: string;
 }
 
-export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {
+export function validateEnv(
+  config: Record<string, unknown>,
+): EnvironmentVariables {
   const validated = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });
@@ -127,7 +133,10 @@ export function validateEnv(config: Record<string, unknown>): EnvironmentVariabl
 
   if (validated.NODE_ENV === Environment.Production) {
     const devSecrets = ['dev-secret', 'change-me', 'earn4u_secret'];
-    for (const secret of [validated.JWT_ACCESS_SECRET, validated.JWT_REFRESH_SECRET]) {
+    for (const secret of [
+      validated.JWT_ACCESS_SECRET,
+      validated.JWT_REFRESH_SECRET,
+    ]) {
       if (devSecrets.some((d) => secret.toLowerCase().includes(d))) {
         throw new Error('Production requires non-default JWT secrets');
       }

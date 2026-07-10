@@ -5,10 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  OneToMany,
   Index,
 } from 'typeorm';
-import { UserRole, UserStatus, Gender, VerificationType } from '../enums/user-role.enum';
+import {
+  UserRole,
+  UserStatus,
+  Gender,
+  VerificationType,
+} from '../enums/user-role.enum';
 import { Wallet } from '../../wallet/entities/wallet.entity';
 import { UserCredentials } from '../../auth/entities/user-credentials.entity';
 
@@ -49,7 +53,12 @@ export class Profile {
   @Column({ name: 'is_verified', default: false })
   isVerified: boolean;
 
-  @Column({ name: 'verification_type', type: 'enum', enum: VerificationType, nullable: true })
+  @Column({
+    name: 'verification_type',
+    type: 'enum',
+    enum: VerificationType,
+    nullable: true,
+  })
   verificationType: VerificationType | null;
 
   @Column({ name: 'vip_level', default: 0 })

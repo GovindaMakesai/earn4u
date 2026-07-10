@@ -54,7 +54,7 @@ services:
           name: earn4u-db
           property: database
       - key: DATABASE_SSL
-        value: "true"
+        value: "false"
       - key: REDIS_HOST
         fromService:
           type: keyvalue
