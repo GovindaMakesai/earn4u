@@ -1,0 +1,82 @@
+# Render Blueprint — Earn4U Backend
+# Deploy: Render Dashboard → New → Blueprint → connect GitHub repo
+
+databases:
+  - name: earn4u-db
+    databaseName: earn4u_db
+    user: earn4u
+    plan: free
+
+services:
+  - type: keyvalue
+    name: earn4u-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
+
+  - type: web
+    name: earn4u-api
+    runtime: node
+    plan: free
+    rootDir: api
+    buildCommand: npm ci && npm run build
+    preDeployCommand: node scripts/migrate.js
+    startCommand: node dist/main
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: API_PREFIX
+        value: api/v1
+      - key: LOG_LEVEL
+        value: info
+      - key: METRICS_ENABLED
+        value: "true"
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: earn4u-db
+          property: host
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: earn4u-db
+          property: port
+      - key: DATABASE_USER
+        fromDatabase:
+          name: earn4u-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: earn4u-db
+          property: password
+      - key: DATABASE_NAME
+        fromDatabase:
+          name: earn4u-db
+          property: database
+      - key: DATABASE_SSL
+        value: "true"
+      - key: REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: earn4u-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: earn4u-redis
+          property: port
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRY
+        value: 15m
+      - key: JWT_REFRESH_EXPIRY
+        value: 30d
+      - key: CORS_ORIGINS
+        sync: false
+      - key: THROTTLE_TTL
+        value: "60000"
+      - key: THROTTLE_LIMIT
+        value: "100"

@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-900: #0A0A0F;
+  --primary-800: #12121A;
+  --primary-700: #1A1A25;
+  --accent-gold: #D4A853;
+  --accent-purple: #8B5CF6;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1B5;
+}
+
+body {
+  background-color: var(--primary-900);
+  color: var(--text-primary);
+}
+
+.glass-card {
+  background: rgba(26, 26, 37, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}

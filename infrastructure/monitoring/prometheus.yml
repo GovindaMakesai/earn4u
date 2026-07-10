@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'earn4u-api'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: ['earn4u-api']
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        action: keep
+        regex: earn4u-api
+
+  - job_name: 'earn4u-redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+
+  - job_name: 'earn4u-postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']

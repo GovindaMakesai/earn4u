@@ -1,0 +1,18 @@
+{
+  "name": "earn4u",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Earn4U — Enterprise Social Entertainment Platform",
+  "scripts": {
+    "stack:up": "powershell -ExecutionPolicy Bypass -File scripts/stack-up.ps1",
+    "stack:down": "docker compose -f infrastructure/docker/docker-compose.yml down",
+    "stack:logs": "docker compose -f infrastructure/docker/docker-compose.yml logs -f",
+    "api:dev": "npm run start:dev --prefix api",
+    "api:build": "npm run build --prefix api",
+    "admin:dev": "npm run dev --prefix apps/admin",
+    "worker:dev": "npm run start:dev --prefix workers"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

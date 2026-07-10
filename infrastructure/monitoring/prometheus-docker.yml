@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: earn4u-api
+    metrics_path: /api/v1/metrics
+    static_configs:
+      - targets: ['api:3000']
+        labels:
+          service: earn4u-api
+          environment: local
+
+  - job_name: earn4u-worker
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['worker:9091']
+        labels:
+          service: earn4u-worker
+          environment: local
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
